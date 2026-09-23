@@ -1,0 +1,9 @@
+{
+  "name": "finassist-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "FinAssist customer support UI. Not yet implemented — reserved for Milkah.",
+  "scripts": {
+    "dev": "echo \"Frontend not yet implemented\" && exit 1"
+  }
+}
