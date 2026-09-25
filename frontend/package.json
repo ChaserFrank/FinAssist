@@ -4,6 +4,14 @@
   "private": true,
   "description": "FinAssist customer support UI. Not yet implemented — reserved for Milkah.",
   "scripts": {
-    "dev": "echo \"Frontend not yet implemented\" && exit 1"
+    "dev": "vite"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.3.1"
   }
 }
