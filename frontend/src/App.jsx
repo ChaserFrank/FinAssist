@@ -1,10 +1,7 @@
+import SupportPage from './pages/SupportPage'
+
 function App() {
-  return (
-    <main>
-      <h1>FinAssist</h1>
-      <p>Payment support and resolution</p>
-    </main>
-  )
+  return <SupportPage />
 }
 
 export default App
