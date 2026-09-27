@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f7f8fa;
+  color: #172033;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.support-page {
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 72px;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid #e7e9ee;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.support-link {
+  border: 0;
+  background: transparent;
+  color: #4b5565;
+  font-weight: 500;
+}
+
+.support-container {
+  width: min(900px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 80px 0;
+}
+
+.welcome-section {
+  max-width: 680px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #596579;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.intro {
+  margin: 20px 0 0;
+  color: #697386;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.support-card {
+  margin-top: 48px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e3e6eb;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(23, 32, 51, 0.06);
+}
+
+.support-card label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.support-card textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 16px;
+  border: 1px solid #d7dce4;
+  border-radius: 10px;
+  outline: none;
+  color: #172033;
+  background: #ffffff;
+  line-height: 1.5;
+}
+
+.support-card textarea:focus {
+  border-color: #687386;
+}
+
+.primary-button {
+  margin-top: 16px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 9px;
+  background: #172033;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.suggestions {
+  margin-top: 56px;
+}
+
+.suggestions h2 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.suggestion-card {
+  padding: 22px;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #e3e6eb;
+  border-radius: 12px;
+  color: #172033;
+}
+
+.suggestion-card:hover {
+  border-color: #aeb6c4;
+}
+
+.suggestion-card strong,
+.suggestion-card span {
+  display: block;
+}
+
+.suggestion-card strong {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.suggestion-card span {
+  color: #697386;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    padding: 0 20px;
+  }
+
+  .support-container {
+    padding: 48px 0;
+  }
+
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+}
