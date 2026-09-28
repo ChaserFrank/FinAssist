@@ -1,6 +1,17 @@
-"""Transaction use cases (application layer).
+"""Transaction application services."""
 
-Placeholder for the foundation PR. This will hold use cases such as
-`get_transaction` once the transaction domain and repository exist.
-Deliberately not implemented yet — see docs/architecture.md.
-"""
+from sqlalchemy.orm import Session
+
+from app.core.exceptions import NotFoundError
+from app.domain.transaction.models import Transaction
+from app.infrastructure.repositories.transaction_repo import TransactionRepository
+
+
+def get_transaction(session: Session, reference: str) -> Transaction:
+    repository = TransactionRepository(session)
+    transaction = repository.get_by_reference(reference)
+
+    if transaction is None:
+        raise NotFoundError("Transaction not found")
+
+    return transaction

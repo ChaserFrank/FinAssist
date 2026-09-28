@@ -1,6 +1,20 @@
-"""Transaction request/response schemas (Pydantic models).
+"""Transaction API schemas."""
 
-Placeholder for the foundation PR. Will define the API contract for
-transaction endpoints once implemented. See docs/api.md for the agreed
-shape.
-"""
+from datetime import datetime
+from decimal import Decimal
+
+from pydantic import BaseModel, ConfigDict
+
+
+class TransactionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    reference: str
+    customer_id: str
+    amount: Decimal
+    currency: str
+    status: str
+    payment_method: str
+    description: str
+    created_at: datetime
