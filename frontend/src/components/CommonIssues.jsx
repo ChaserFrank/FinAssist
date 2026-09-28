@@ -3,6 +3,7 @@ export default function CommonIssues({
   onCheckPayment,
   onPaymentReversed,
   onReportIssue,
+  onVerifyPayment,
 }) {
   const issues = [
     {
@@ -19,6 +20,11 @@ export default function CommonIssues({
       id: '03',
       title: 'Report a payment issue',
       desc: 'Tell us about a problem with a transaction.',
+    },
+    {
+      id: '04',
+      title: 'Verify a payment',
+      desc: 'Confirm that a payment belongs to a customer.',
     },
   ]
 
@@ -51,6 +57,11 @@ export default function CommonIssues({
 
               if (issue.id === '03') {
                 onReportIssue()
+                return
+              }
+
+              if (issue.id === '04') {
+                onVerifyPayment()
                 return
               }
 

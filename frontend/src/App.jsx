@@ -3,6 +3,7 @@ import SupportPage from './SupportPage'
 import PaymentLookupPage from './pages/PaymentLookupPage'
 import PaymentReversedPage from './pages/PaymentReversedPage'
 import ReportPaymentIssuePage from './pages/ReportPaymentIssuePage'
+import CustomerVerificationPage from './pages/CustomerVerificationPage'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('support')
@@ -31,12 +32,23 @@ function App() {
     )
   }
 
+  if (currentPage === 'customer-verification') {
+    return (
+      <CustomerVerificationPage
+        onBack={() => setCurrentPage('support')}
+      />
+    )
+  }
+
   return (
     <div className="App">
       <SupportPage
         onCheckPayment={() => setCurrentPage('payment-lookup')}
         onPaymentReversed={() => setCurrentPage('payment-reversed')}
         onReportIssue={() => setCurrentPage('report-payment-issue')}
+        onVerifyPayment={() =>
+          setCurrentPage('customer-verification')
+        }
       />
     </div>
   )

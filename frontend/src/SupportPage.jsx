@@ -6,6 +6,7 @@ export default function SupportPage({
   onCheckPayment,
   onPaymentReversed,
   onReportIssue,
+  onVerifyPayment,
 }) {
   const [message, setMessage] = useState('')
 
@@ -41,6 +42,7 @@ export default function SupportPage({
         onCheckPayment={onCheckPayment}
         onPaymentReversed={onPaymentReversed}
         onReportIssue={onReportIssue}
+        onVerifyPayment={onVerifyPayment}
       />
     </div>
   )
