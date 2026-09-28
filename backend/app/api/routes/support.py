@@ -22,7 +22,7 @@ router = APIRouter(prefix="/support", tags=["support"])
 )
 def create_case(
     payload: SupportCaseCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> SupportCaseResponse:
     if not payload.message.strip():
         raise HTTPException(
@@ -49,7 +49,7 @@ def create_case(
 )
 def lookup_case(
     reference: str,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> SupportCaseResponse:
     try:
         return get_support_case(db, reference)
@@ -66,7 +66,7 @@ def lookup_case(
 )
 def investigate_case(
     reference: str,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> SupportCaseResponse:
     try:
         return investigate_support_case(db, reference)

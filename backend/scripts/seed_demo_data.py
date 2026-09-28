@@ -5,7 +5,6 @@ from decimal import Decimal
 from app.domain.transaction.models import Transaction
 from app.infrastructure.database.session import SessionLocal
 
-
 DEMO_TRANSACTIONS = [
     {
         "reference": "TXN-DEMO-001",

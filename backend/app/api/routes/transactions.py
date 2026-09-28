@@ -11,10 +11,13 @@ from app.schemas.transaction import TransactionResponse
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
-@router.get("/{reference}", response_model=TransactionResponse)
+@router.get(
+    "/{reference}",
+    response_model=TransactionResponse,
+)
 def lookup_transaction(
     reference: str,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> TransactionResponse:
     try:
         return get_transaction(db, reference)
