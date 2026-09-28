@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const API_BASE_URL = 'http://127.0.0.1:8000'
+import { createSupportCase } from '../services/api'
 
 function ReportPaymentIssuePage({ onBack }) {
   const [reference, setReference] = useState('')
@@ -29,27 +28,10 @@ function ReportPaymentIssuePage({ onBack }) {
     setError('')
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/support/cases`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            transaction_reference: trimmedReference,
-            message: trimmedMessage,
-          }),
-        }
+      const data = await createSupportCase(
+        trimmedReference,
+        trimmedMessage
       )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(
-          data.detail || 'We could not submit your report.'
-        )
-      }
 
       setSupportCase(data)
     } catch (err) {
