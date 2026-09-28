@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const API_BASE_URL = 'http://127.0.0.1:8000'
+import { getTransaction } from '../services/api'
 
 function PaymentReversedPage({ onBack }) {
   const [reference, setReference] = useState('')
@@ -23,21 +22,7 @@ function PaymentReversedPage({ onBack }) {
     setError('')
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/transactions/${encodeURIComponent(
-          trimmedReference
-        )}`
-      )
-
-      if (response.status === 404) {
-        throw new Error('We could not find a payment with that reference.')
-      }
-
-      if (!response.ok) {
-        throw new Error('We could not check the payment right now.')
-      }
-
-      const data = await response.json()
+      const data = await getTransaction(trimmedReference)
       setPayment(data)
     } catch (err) {
       setError(
