@@ -1,14 +1,22 @@
-"""Dispute request/response schemas (Pydantic models).
+"""Dispute API schemas."""
 
-Placeholder for the foundation PR. Will define the API contract for
-dispute endpoints once implemented, e.g.:
+from datetime import datetime
 
-    POST /api/v1/disputes
-    {
-      "customer_reference": "CUS-10021",
-      "transaction_reference": "TXN-84721",
-      "reason": "Payment failed but account was charged"
-    }
+from pydantic import BaseModel, ConfigDict
 
-See docs/api.md for the full agreed contract.
-"""
+
+class DisputeCreate(BaseModel):
+    customer_reference: str
+    transaction_reference: str
+    reason: str
+
+
+class DisputeResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    reference: str
+    support_case_reference: str
+    transaction_reference: str
+    reason: str
+    status: str
+    created_at: datetime

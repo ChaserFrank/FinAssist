@@ -1,29 +1,48 @@
-function SupportInput({ message, onMessageChange, onSubmit }) {
+function SupportInput({
+  message,
+  onMessageChange,
+  onSubmit,
+}) {
   return (
-    <section className="support-card">
-      <form onSubmit={onSubmit}>
-        <label htmlFor="payment-message">
-          Describe your payment issue
-        </label>
+    <div className="support-card">
+      <form className="support-form" onSubmit={onSubmit}>
+        <div className="input-header">
+          <div>
+            <label htmlFor="payment-issue" className="support-label">
+              Describe your payment issue
+            </label>
+
+            <p className="input-help">
+              Include any details that may help us understand what happened.
+            </p>
+          </div>
+        </div>
 
         <textarea
-          id="payment-message"
+          id="payment-issue"
+          className="support-textarea"
           value={message}
           onChange={(event) => onMessageChange(event.target.value)}
-          placeholder="For example: I was charged, but my payment hasn't gone through."
-          rows="5"
+          placeholder="For example: My payment was deducted but the recipient did not receive it."
+          rows={5}
         />
 
-        <button
-          className="primary-button"
-          type="submit"
-          disabled={!message.trim()}
-        >
-          Get help
-        </button>
+        <div className="form-footer">
+          <span className="input-note">
+            Do not include your PIN or password.
+          </span>
+
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={!message.trim()}
+          >
+            Get help
+          </button>
+        </div>
       </form>
-    </section>
-  )
+    </div>
+  );
 }
 
-export default SupportInput
+export default SupportInput;

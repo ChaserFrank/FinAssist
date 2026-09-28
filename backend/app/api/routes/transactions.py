@@ -1,12 +1,28 @@
-"""Transaction routes.
+"""Transaction API routes."""
 
-Placeholder for the foundation PR. Endpoints (e.g. GET /api/v1/transactions/
-{reference}) will be added once the transaction domain and application
-layers exist. Not yet registered in `app.main`.
-"""
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
-from fastapi import APIRouter
+from app.api.dependencies import get_db
+from app.application.transaction_service import get_transaction
+from app.core.exceptions import NotFoundError
+from app.schemas.transaction import TransactionResponse
 
-router = APIRouter(tags=["transactions"])
+router = APIRouter(prefix="/transactions", tags=["transactions"])
 
-# No endpoints yet — see docs/decisions/ for the sequencing of milestones.
+
+@router.get(
+    "/{reference}",
+    response_model=TransactionResponse,
+)
+def lookup_transaction(
+    reference: str,
+    db: Session = Depends(get_db),  # noqa: B008
+) -> TransactionResponse:
+    try:
+        return get_transaction(db, reference)
+    except NotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        ) from exc

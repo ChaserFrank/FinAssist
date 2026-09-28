@@ -1,13 +1,9 @@
-"""FastAPI application entrypoint.
-
-This module is intentionally thin: it wires up application metadata and
-routers only. No database access or business logic belongs here — see
-`app/api/routes/` for endpoints and `app/application/` for use cases.
-"""
+"""FastAPI application entrypoint."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import health
+from app.api.routes import customers, disputes, health, support, transactions
 from app.config import get_settings
 
 settings = get_settings()
@@ -22,11 +18,19 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# --- Routers ---
-app.include_router(health.router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Future routers (added once their respective domains are implemented):
-# app.include_router(transactions.router, prefix="/api/v1")
-# app.include_router(customers.router, prefix="/api/v1")
-# app.include_router(support_cases.router, prefix="/api/v1")
-# app.include_router(disputes.router, prefix="/api/v1")
+app.include_router(health.router)
+app.include_router(customers.router, prefix="/api/v1")
+app.include_router(transactions.router, prefix="/api/v1")
+app.include_router(support.router, prefix="/api/v1")
+app.include_router(disputes.router, prefix="/api/v1")

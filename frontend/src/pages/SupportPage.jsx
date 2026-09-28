@@ -1,82 +1,135 @@
 import { useState } from 'react'
 import SupportInput from '../components/SupportInput'
+import PaymentLookupPage from './PaymentLookupPage'
+
+const commonIssues = [
+  {
+    icon: '01',
+    title: 'Check a payment',
+    description: 'Find out what happened to a payment.',
+    message: 'I want to check the status of my payment.',
+  },
+  {
+    icon: '02',
+    title: 'Payment reversed',
+    description: 'Understand why a payment was reversed.',
+    message: 'My payment was reversed.',
+  },
+  {
+    icon: '03',
+    title: 'Report a payment issue',
+    description: 'Tell us about a problem with a transaction.',
+    message: 'I want to report a problem with a payment.',
+  },
+]
 
 function SupportPage() {
   const [message, setMessage] = useState('')
+  const [submittedMessage, setSubmittedMessage] = useState('')
+  const [showPaymentLookup, setShowPaymentLookup] = useState(false)
 
-  const handleSubmit = (event) => {
+  function handleSubmit(event) {
     event.preventDefault()
 
     if (!message.trim()) {
       return
     }
 
-    console.log('Support request:', message)
+    setSubmittedMessage(message.trim())
+  }
+
+  function handleIssueClick(issueMessage) {
+    setMessage(issueMessage)
+    setSubmittedMessage('')
+  }
+
+  if (showPaymentLookup) {
+    return (
+      <PaymentLookupPage
+        onBack={() => setShowPaymentLookup(false)}
+      />
+    )
   }
 
   return (
-    <div className="support-page">
-      <header className="topbar">
-        <div className="brand">FinAssist</div>
-        <button className="support-link">Support</button>
-      </header>
+    <main className="page">
+      <section className="hero">
+        <p className="eyebrow">Payment support</p>
 
-      <main className="support-container">
-        <section className="welcome-section">
-          <p className="eyebrow">Payment support</p>
+        <h1>How can we help with your payment?</h1>
 
-          <h1>How can we help with your payment?</h1>
+        <p className="hero-description">
+          Tell us what happened and FinAssist will help you find the next step.
+        </p>
+      </section>
 
-          <p className="intro">
-            Tell us what happened and FinAssist will help you find the next
-            step.
-          </p>
-        </section>
-
+      <section className="support-card">
         <SupportInput
           message={message}
           onMessageChange={setMessage}
           onSubmit={handleSubmit}
         />
 
-        <section className="suggestions">
+        {submittedMessage && (
+          <div className="status status-success">
+            <strong>Thanks. We received your message.</strong>
+
+            <p>
+              FinAssist will use the information you provided to help identify
+              the next step.
+            </p>
+          </div>
+        )}
+      </section>
+
+      <section className="common-issues">
+        <div className="section-heading">
+          <p className="section-eyebrow">Quick options</p>
+
           <h2>Common payment issues</h2>
 
-          <div className="suggestion-grid">
-            <button
-              className="suggestion-card"
-              type="button"
-              onClick={() =>
-                setMessage('I want to check the status of a payment.')
-              }
-            >
-              <strong>Check a payment</strong>
-              <span>Find out what happened to a payment.</span>
-            </button>
+          <p>
+            Choose an option to get started faster.
+          </p>
+        </div>
 
+        <div className="issue-grid">
+          {commonIssues.map((issue) => (
             <button
-              className="suggestion-card"
+              key={issue.title}
               type="button"
-              onClick={() => setMessage('My payment was reversed.')}
-            >
-              <strong>Payment reversed</strong>
-              <span>Understand why a payment was reversed.</span>
-            </button>
+              className="issue-card"
+              onClick={() => {
+                if (issue.title === 'Check a payment') {
+                  setShowPaymentLookup(true)
+                  return
+                }
 
-            <button
-              className="suggestion-card"
-              type="button"
-              onClick={() =>
-                setMessage('I want to report a payment issue.')
-              }
+                handleIssueClick(issue.message)
+              }}
             >
-              <strong>Report a payment issue</strong>
-              <span>Tell us about a problem with a transaction.</span>
+              <span className="issue-icon">
+                {issue.icon}
+              </span>
+
+              <span className="issue-content">
+                <span className="issue-title">
+                  {issue.title}
+                </span>
+
+                <span className="issue-description">
+                  {issue.description}
+                </span>
+              </span>
+
+              <span className="issue-arrow">
+                →
+              </span>
             </button>
-          </div>
-        </section>
-      </main>
-    </div>
+          ))}
+        </div>
+      </section>
+    </main>
   )
 }
 

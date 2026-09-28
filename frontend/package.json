@@ -4,7 +4,8 @@
   "private": true,
   "description": "FinAssist customer support UI. Not yet implemented — reserved for Milkah.",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "react": "^19.3.0",
