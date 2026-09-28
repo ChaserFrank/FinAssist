@@ -4,6 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import get_settings
+from app.domain.customer import Customer  # noqa: F401
 from app.domain.support_case import SupportCase  # noqa: F401
 from app.domain.transaction.models import Transaction  # noqa: F401
 from app.infrastructure.database.base import Base

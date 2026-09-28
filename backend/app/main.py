@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import health, support, transactions
+from app.api.routes import customers, disputes, health, support, transactions
 from app.config import get_settings
 
 settings = get_settings()
@@ -30,5 +30,7 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
+app.include_router(customers.router, prefix="/api/v1")
 app.include_router(transactions.router, prefix="/api/v1")
 app.include_router(support.router, prefix="/api/v1")
+app.include_router(disputes.router, prefix="/api/v1")

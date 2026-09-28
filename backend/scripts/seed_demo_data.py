@@ -1,9 +1,37 @@
-"""Seed synthetic transaction data for local development."""
+"""Seed synthetic customer and transaction data for local development."""
 
 from decimal import Decimal
 
+from app.domain.customer import Customer
 from app.domain.transaction.models import Transaction
 from app.infrastructure.database.session import SessionLocal
+
+DEMO_CUSTOMERS = [
+    {
+        "reference": "CUS-DEMO-001",
+        "name": "Amina Otieno",
+        "phone": "+254700000001",
+        "email": "amina.otieno@example.com",
+    },
+    {
+        "reference": "CUS-DEMO-002",
+        "name": "Brian Kamau",
+        "phone": "+254700000002",
+        "email": "brian.kamau@example.com",
+    },
+    {
+        "reference": "CUS-DEMO-003",
+        "name": "Carol Wanjiku",
+        "phone": "+254700000003",
+        "email": "carol.wanjiku@example.com",
+    },
+    {
+        "reference": "CUS-DEMO-004",
+        "name": "David Mwangi",
+        "phone": "+254700000004",
+        "email": "david.mwangi@example.com",
+    },
+]
 
 DEMO_TRANSACTIONS = [
     {
@@ -47,6 +75,20 @@ DEMO_TRANSACTIONS = [
 
 def main() -> None:
     with SessionLocal() as session:
+        for data in DEMO_CUSTOMERS:
+            existing = (
+                session.query(Customer)
+                .filter(Customer.reference == data["reference"])
+                .first()
+            )
+
+            if existing:
+                continue
+
+            session.add(Customer(**data))
+
+        session.flush()
+
         for data in DEMO_TRANSACTIONS:
             existing = (
                 session.query(Transaction)
@@ -61,7 +103,10 @@ def main() -> None:
 
         session.commit()
 
-    print(f"Seeded {len(DEMO_TRANSACTIONS)} synthetic transaction scenarios.")
+    print(
+        f"Seeded {len(DEMO_CUSTOMERS)} synthetic customers and "
+        f"{len(DEMO_TRANSACTIONS)} synthetic transaction scenarios."
+    )
 
 
 if __name__ == "__main__":
