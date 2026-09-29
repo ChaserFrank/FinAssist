@@ -1,12 +1,34 @@
 """Transaction routes.
 
-Placeholder for the foundation PR. Endpoints (e.g. GET /api/v1/transactions/
-{reference}) will be added once the transaction domain and application
-layers exist. Not yet registered in `app.main`.
+HTTP layer only — no business logic, no direct database access.
+All work is delegated to TransactionService.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-router = APIRouter(tags=["transactions"])
+from app.api.dependencies import get_transaction_service
+from app.application.transaction_service import TransactionService
+from app.schemas.transaction import TransactionResponse
 
-# No endpoints yet — see docs/decisions/ for the sequencing of milestones.
+router = APIRouter(prefix="/transactions", tags=["transactions"])
+
+
+@router.get("/{reference}", response_model=TransactionResponse)
+def get_transaction(
+    reference: str,
+    service: TransactionService = Depends(get_transaction_service),
+) -> TransactionResponse:
+    """Retrieve a transaction by its human-friendly reference.
+
+    Raises HTTP 404 (TRANSACTION_NOT_FOUND) if the reference does not exist.
+    """
+    txn = service.get_transaction(reference)
+    return TransactionResponse(
+        reference=txn.reference,
+        customer_reference=txn.customer.reference,
+        amount=txn.amount,
+        currency=txn.currency,
+        status=txn.status,
+        payment_method=txn.payment_method,
+        created_at=txn.created_at,
+    )
