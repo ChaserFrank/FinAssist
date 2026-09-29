@@ -5,10 +5,10 @@ from the DATABASE_URL environment variable) rather than duplicating it in
 alembic.ini, so migrations always target the same database as the running
 application.
 
-No domain models are imported into `target_metadata` yet — the domain
-schema has not been implemented. Once ORM models exist under
-`app.domain.*`, import their metadata here so `alembic revision
---autogenerate` can detect schema changes.
+Domain models are imported here so that ``Base.metadata`` is fully
+populated and ``alembic revision --autogenerate`` can detect schema
+changes.  Import order follows foreign-key dependency direction:
+  customers → transactions → support_cases → disputes
 """
 
 from logging.config import fileConfig
@@ -16,6 +16,12 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+# Ensure all ORM models are registered on Base.metadata before autogenerate
+# inspects it.  Import order matters for FK resolution during table creation.
+import app.domain.customer.models  # noqa: F401  — registers Customer
+import app.domain.dispute.models  # noqa: F401  — registers Dispute
+import app.domain.support.models  # noqa: F401  — registers SupportCase
+import app.domain.transaction.models  # noqa: F401  — registers Transaction
 from app.config import get_settings
 from app.infrastructure.database.base import Base
 
@@ -24,10 +30,15 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# The URL normally comes from application settings (DATABASE_URL). Callers
+# such as the migration tests may instead pre-set ``sqlalchemy.url`` on the
+# Alembic Config object; that takes precedence so they never have to mutate
+# process environment. Note: ConfigParser needs literal "%" escaped as "%%".
+if not config.get_main_option("sqlalchemy.url"):
+    config.set_main_option(
+        "sqlalchemy.url", get_settings().DATABASE_URL.get_secret_value().replace("%", "%%")
+    )
 
-# Placeholder — no domain models registered on Base yet.
 target_metadata = Base.metadata
 
 
