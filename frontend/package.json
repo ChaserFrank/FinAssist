@@ -1,10 +1,12 @@
 {
   "name": "finassist-frontend",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "FinAssist customer support UI. Not yet implemented — reserved for Milkah.",
+  "description": "FinAssist customer support UI -- payment lookup, verification, dispute intake, and AI-assisted support messages, backed by the FastAPI backend.",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.3.0",
