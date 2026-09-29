@@ -13,6 +13,21 @@ jobs:
   backend:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: finassist_ci
+          POSTGRES_PASSWORD: finassist_ci
+          POSTGRES_DB: finassist_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finassist_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,10 +41,60 @@ jobs:
         working-directory: backend
         run: pip install ".[dev]"
 
-      - name: Run tests
-        working-directory: backend
-        run: pytest
-
-      - name: Run lint
+      - name: Lint
         working-directory: backend
         run: ruff check .
+
+      - name: Scan for hard-coded secrets
+        working-directory: backend
+        run: python -m scripts.check_secrets ..
+
+      - name: Unit and API tests (SQLite)
+        working-directory: backend
+        env:
+          DATABASE_URL: "sqlite://"
+        run: pytest --ignore=tests/integration
+
+      - name: Apply migrations (PostgreSQL)
+        working-directory: backend
+        env:
+          # CI-only, throwaway database that exists for the lifetime of this
+          # job -- not a real credential. See docs/security.md.
+          DATABASE_URL: postgresql+psycopg://finassist_ci:finassist_ci@localhost:5432/finassist_ci  # pragma: allowlist secret -- throwaway CI-only service-container credential, not a real secret
+        run: alembic upgrade head
+
+      - name: Integration tests (real PostgreSQL)
+        working-directory: backend
+        env:
+          # Must end in "_test" -- tests/integration/conftest.py refuses to
+          # run against a database name that doesn't, as a second guard
+          # beyond using a separate env var from DATABASE_URL (these tests
+          # insert and delete rows).
+          TEST_DATABASE_URL: postgresql+psycopg://finassist_ci:finassist_ci@localhost:5432/finassist_ci_test  # pragma: allowlist secret -- same throwaway CI credential
+          REQUIRE_INTEGRATION: "1"
+        run: |
+          PGPASSWORD=finassist_ci psql -h localhost -U finassist_ci -d finassist_ci \
+            -c "CREATE DATABASE finassist_ci_test;"
+          pytest tests/integration
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build

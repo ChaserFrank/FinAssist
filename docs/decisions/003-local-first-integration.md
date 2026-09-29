@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Peter has instructed the team to get the project working locally while
+As instructed by the team lead, the team to get the project working locally while
 the IBM TechZone environment is being prepared. Backend, frontend,
 database, and business-rule development should not be blocked on IBM
 service availability.

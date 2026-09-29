@@ -46,7 +46,7 @@ WorkflowPort (port)
 See `decisions/003-local-first-integration.md` for why local/mock
 adapters come first.
 
-## End-to-end flow (target, once implemented)
+## End-to-end flow (implemented)
 
 ```text
 Customer message
@@ -69,15 +69,15 @@ AI phrases the (backend-authoritative) result back to the customer
 
 ## Milestone sequence
 
-1. Repository + architecture foundation (this PR)
-2. Local infrastructure (Docker Compose, Postgres, FastAPI, Alembic, health)
-3. Domain (Customer, Transaction, SupportCase, Dispute)
-4. Transaction workflow (get transaction)
-5. Dispute workflow (investigate → validate → create case → create dispute)
-6. Frontend (customer input → API → result)
-7. Local AI adapter (message → structured intent)
-8. Local orchestration (intent → tool → backend → result)
-9. IBM integration (swap in `WatsonXAIService` / `WatsonOrchestrateAdapter`)
+1. ✅ Repository + architecture foundation
+2. ✅ Local infrastructure (Docker Compose, Postgres, FastAPI, Alembic, health)
+3. ✅ Domain (Customer, Transaction, SupportCase, Dispute) — see ADR-004, ADR-005
+4. ✅ Transaction workflow (get transaction, ownership-scoped)
+5. ✅ Dispute workflow (investigate → validate → create case → create dispute) — ADR-005, ADR-006
+6. ✅ Frontend (customer input → API → result) — `POST /api/v1/support/messages`
+7. ✅ Local AI adapter (message → structured intent) — `MockAIService`, ADR-002
+8. ✅ Local orchestration (intent → tool → backend → result) — `LocalWorkflowAdapter`
+9. ⬜ IBM integration (swap in `WatsonXAIService` / `WatsonOrchestrateAdapter`)
 10. End-to-end hardening (tests, logging, error handling, security, docs, demo)
 
 ## What we are deliberately not building
