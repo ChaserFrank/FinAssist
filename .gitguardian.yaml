@@ -1,0 +1,18 @@
+# GitGuardian (ggshield) configuration for this repository.
+# Schema reference: https://docs.gitguardian.com/ggshield-docs/configuration
+#
+# This is a second, independent layer on top of actually not having any
+# secret-shaped literal in source (see docs/security.md and
+# backend/scripts/check_secrets.py). Nothing here should ever be the *only*
+# reason a file is considered safe.
+version: 2
+
+secret:
+  ignored_paths:
+    # This is the test suite for our own secret scanner
+    # (backend/scripts/check_secrets.py). It necessarily contains strings
+    # shaped like real AWS keys / GitHub tokens / connection-string
+    # passwords to verify the scanner recognizes those shapes -- every
+    # value is generated at import time with `secrets.token_hex()`, never a
+    # real or literal credential. See the file's own module docstring.
+    - "backend/tests/unit/test_no_hardcoded_secrets.py"

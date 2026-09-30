@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: pip install ".[dev]"
+
+      - name: Lint
+        working-directory: backend
+        run: ruff check .
+
+      - name: Scan for hard-coded secrets
+        working-directory: backend
+        run: python -m scripts.check_secrets ..
+
+      - name: Unit and API tests (SQLite)
+        working-directory: backend
+        env:
+          DATABASE_URL: "sqlite://"
+        run: pytest --ignore=tests/integration
+
+      # PostgreSQL is started here, in a step, rather than via the workflow's
+      # `services:` block -- that block needs its credentials as a literal
+      # at YAML-parse time (services start before any step runs), which is
+      # exactly the "password sitting in the file" pattern GitGuardian (and
+      # our own scripts/check_secrets.py) exist to catch. Generating the
+      # password at runtime, inside a step, means no credential-shaped
+      # string is ever committed -- see docs/security.md.
+      - name: Start ephemeral PostgreSQL
+        run: |
+          CI_DB_PASSWORD="$(openssl rand -hex 16)"
+          echo "::add-mask::$CI_DB_PASSWORD"
+          echo "CI_DB_PASSWORD=$CI_DB_PASSWORD" >> "$GITHUB_ENV"
+
+          docker run -d --name ci-postgres \
+            -e POSTGRES_USER=finassist_ci \
+            -e POSTGRES_PASSWORD="$CI_DB_PASSWORD" \
+            -e POSTGRES_DB=finassist_ci \
+            -p 5432:5432 \
+            postgres:16-alpine
+
+          for _ in $(seq 1 30); do
+            if docker exec ci-postgres pg_isready -U finassist_ci >/dev/null 2>&1; then
+              echo "PostgreSQL is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "PostgreSQL did not become ready in time" >&2
+          exit 1
+
+      - name: Apply migrations (PostgreSQL)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://finassist_ci:${{ env.CI_DB_PASSWORD }}@localhost:5432/finassist_ci
+        run: alembic upgrade head
+
+      - name: Integration tests (real PostgreSQL)
+        working-directory: backend
+        env:
+          # Must end in "_test" -- tests/integration/conftest.py refuses to
+          # run against a database name that doesn't, as a second guard
+          # beyond using a separate env var from DATABASE_URL (these tests
+          # insert and delete rows).
+          TEST_DATABASE_URL: postgresql+psycopg://finassist_ci:${{ env.CI_DB_PASSWORD }}@localhost:5432/finassist_ci_test
+          REQUIRE_INTEGRATION: "1"
+        run: |
+          PGPASSWORD="$CI_DB_PASSWORD" psql -h localhost -U finassist_ci -d finassist_ci \
+            -c "CREATE DATABASE finassist_ci_test;"
+          pytest tests/integration
+
+      - name: Stop ephemeral PostgreSQL
+        if: always()
+        run: docker rm -f ci-postgres
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build

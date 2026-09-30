@@ -1,0 +1,45 @@
+# Local development stack: PostgreSQL + FastAPI backend.
+#
+# All credentials come from your git-ignored `.env` file (copy .env.example).
+# Nothing secret has a default here on purpose: `${VAR:?message}` makes
+# `docker compose` refuse to start with a clear message if a value is unset,
+# instead of silently falling back to a guessable credential.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
+    ports:
+      # Bound to loopback only: the database is reachable from this machine
+      # (psql, GUI clients) but never from the local network.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # $$ defers expansion to the container's own environment.
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - .env
+    environment:
+      # Assembled from the same POSTGRES_* values as the database service so
+      # the two can never drift apart. Use a URL-safe password (hex, e.g.
+      # `openssl rand -hex 16`); special characters would need URL-encoding.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD_URLENCODED}@postgres:5432/${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
