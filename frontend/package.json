@@ -1,0 +1,19 @@
+{
+  "name": "finassist-frontend",
+  "version": "0.2.0",
+  "private": true,
+  "description": "FinAssist customer support UI -- payment lookup, verification, dispute intake, and AI-assisted support messages, backed by the FastAPI backend.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.3.1"
+  }
+}

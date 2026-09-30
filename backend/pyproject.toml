@@ -1,0 +1,43 @@
+[project]
+name = "finassist-backend"
+version = "0.1.0"
+description = "FinAssist backend — AI-powered payment support and resolution agent."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<0.116",
+    "uvicorn[standard]>=0.32,<0.33",
+    "pydantic-settings>=2.6,<3.0",
+    "sqlalchemy>=2.0,<2.1",
+    "psycopg[binary]>=3.2,<4.0",
+    "alembic>=1.14,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "httpx>=0.27,<0.28",
+    "ruff>=0.7,<0.8",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's Depends() in argument defaults is the framework's idiom, not a bug.
+extend-immutable-calls = ["fastapi.Depends"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = ["integration: marks tests as integration tests requiring PostgreSQL"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
