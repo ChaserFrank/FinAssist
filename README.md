@@ -1,7 +1,7 @@
 # FinAssist
 
 FinAssist is an AI-powered payment support and resolution agent, built for
-the IBM Tech Training Phase 3 project (Team 5).
+the IBM Tech Training.
 
 It is a **payment-support workflow system with an AI interface** — not an
 "AI chatbot" that is trusted to act on the world directly.
