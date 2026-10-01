@@ -47,3 +47,16 @@ def test_cors_origins_parsed_and_blank_entries_dropped(monkeypatch: pytest.Monke
     monkeypatch.setenv("DATABASE_URL", "sqlite://")
     monkeypatch.setenv("CORS_ORIGINS", " http://a.test , ,http://b.test,")
     assert Settings(_env_file=None).cors_origin_list == ["http://a.test", "http://b.test"]
+
+
+def test_api_public_url_defaults_to_empty(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "sqlite://")
+    monkeypatch.delenv("API_PUBLIC_URL", raising=False)
+    assert Settings(_env_file=None).API_PUBLIC_URL == ""
+
+
+def test_api_public_url_is_read_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "sqlite://")
+    monkeypatch.setenv("API_PUBLIC_URL", "https://finassist-backend.example.azurecontainerapps.io")
+    settings = Settings(_env_file=None)
+    assert settings.API_PUBLIC_URL == "https://finassist-backend.example.azurecontainerapps.io"

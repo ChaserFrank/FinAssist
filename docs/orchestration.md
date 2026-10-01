@@ -38,6 +38,16 @@ a reply built from the result. `SupportMessageService` contains no business
 rules either — eligibility, ownership, and state checks all live inside the
 services `LocalWorkflowAdapter` dispatches to.
 
+## Connecting a real orchestrator to the deployed API
+
+Once the backend is deployed (`docs/deployment.md` or
+`docs/deployment-azure.md`) and `API_PUBLIC_URL` is set, `GET
+/openapi.json` is a self-describing document — its `servers` field names
+the real host (see `app/main.py`) — ready to import into watsonx
+Orchestrate as a custom OpenAPI tool. Only the endpoints matching the
+table above should be exposed as tools; `/health` and the raw `/docs` UI
+should not be.
+
 ## Configuration
 
 ```text

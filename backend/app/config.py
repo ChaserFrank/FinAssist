@@ -40,6 +40,14 @@ class Settings(BaseSettings):
     # Defaults to the Vite dev server; set explicitly for any other deployment.
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # The public HTTPS URL this API is reachable at once deployed (e.g. an
+    # Azure Container Apps or IBM Code Engine FQDN). Empty locally. When set,
+    # it is published in the generated OpenAPI document's `servers` field
+    # (see app/main.py) so anything importing that document -- watsonx
+    # Orchestrate's OpenAPI tool import included -- knows the correct host
+    # to call without the importer having to type it in by hand.
+    API_PUBLIC_URL: str = ""
+
     # --- Database (required; no default on purpose) ---
     DATABASE_URL: SecretStr
 

@@ -38,6 +38,16 @@ app = FastAPI(
         "Database persists."
     ),
     version="0.1.0",
+    # Self-describing OpenAPI document: when API_PUBLIC_URL is set (i.e. in
+    # a real deployment), published tool importers -- watsonx Orchestrate's
+    # OpenAPI import included -- read the correct host straight from the
+    # spec instead of needing it typed in separately. Omitted entirely in
+    # local development, where there is no single correct public URL.
+    servers=(
+        [{"url": settings.API_PUBLIC_URL, "description": settings.APP_ENV}]
+        if settings.API_PUBLIC_URL
+        else None
+    ),
 )
 
 # ---------------------------------------------------------------------------

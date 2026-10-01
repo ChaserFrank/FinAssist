@@ -10,5 +10,9 @@ version: 2
 secret:
   ignored_paths:
     # This is the test suite for our own secret scanner
-    # (backend/scripts/check_secrets.py).
+    # (backend/scripts/check_secrets.py). It necessarily contains strings
+    # shaped like real AWS keys / GitHub tokens / connection-string
+    # passwords to verify the scanner recognizes those shapes -- every
+    # value is generated at import time with `secrets.token_hex()`, never a
+    # real or literal credential. See the file's own module docstring.
     - "backend/tests/unit/test_no_hardcoded_secrets.py"
