@@ -12,11 +12,11 @@ It is a **payment-support workflow system with an AI interface** — not an
 
 | Component | Responsibility | Status                                   |
 |---|---|------------------------------------------|
-| React frontend | Collect and display information | Implemented                              |
+| React frontend | Collect and display information |  Implemented                             |
 | watsonx.ai | Understand natural language | `MockAIService` stand-in (ADR-003)       |
 | Watson Orchestrate | Coordinate workflow/tool calls | `LocalWorkflowAdapter` stand-in (ADR-003) |
-| FastAPI backend | Validate, enforce business rules, execute operations |  Implemented                             |
-| PostgreSQL | Persist authoritative application state |  Implemented                            |
+| FastAPI backend | Validate, enforce business rules, execute operations |  Implemented                            |
+| PostgreSQL | Persist authoritative application state | Implemented                              |
 
 AI output is treated as **untrusted input**. The backend independently
 verifies anything the AI extracts (transaction references, amounts, etc.)
@@ -95,7 +95,7 @@ See `docs/api.md` for the API reference.
 
 ```bash
 cd backend
-pip install ".[dev]"
+pip install .[dev]
 DATABASE_URL="sqlite://" pytest --ignore=tests/integration   # 83 tests, no DB needed
 ruff check .
 python -m scripts.check_secrets ..                            # no hard-coded secrets
@@ -119,6 +119,25 @@ cd frontend && npm run build
 CI (`.github/workflows/ci.yml`) runs all of the above — lint, secrets scan,
 unit/API tests, migrations + integration tests against a real ephemeral
 Postgres, and the frontend build — on every push and PR.
+
+## Deployment
+
+Both containers deploy as public-HTTPS services — needed both for
+watsonx Orchestrate to call the backend as a tool, and for project
+submission. Two equivalent routes are documented, since watsonx
+Orchestrate doesn't care which cloud hosts the API it calls:
+
+- **`docs/deployment.md`** — IBM Container Registry + Code Engine
+- **`docs/deployment-azure.md`** — Docker Hub + Azure Container Apps
+  (avoids IBM Cloud Databases' account-upgrade requirement; Azure's free
+  account includes a genuine 12-month free tier for PostgreSQL Flexible
+  Server)
+
+Both cover the same real gotchas: the backend-before-frontend build
+order (the frontend bakes its API URL in at build time), where
+PostgreSQL actually runs (not on the app platform itself, in either
+case), and connecting the deployed backend's `/openapi.json` to watsonx
+Orchestrate as a custom tool.
 
 ## Branch strategy
 
@@ -167,9 +186,6 @@ Implemented:
 **Not yet implemented** (deliberately, per ADR-003 and the "what we are
 deliberately not building" list in `docs/architecture.md`):
 
-- Real watsonx.ai / Watson Orchestrate integration (Milestone 9) — the
-  `AIService` / `WorkflowPort` interfaces are ready; only the IBM-backed
-  adapters remain to be written once TechZone credentials exist
 - Authentication (`docs/security.md`) — `customer_reference` is currently a
   claimed identity, mitigated but not replaced by masking and
   not-found-not-mismatch responses

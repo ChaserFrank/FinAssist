@@ -29,3 +29,6 @@ frontend/build/
 # --- Database ---
 *.sqlite3
 pgdata/
+
+# generated API
+openapi.json
